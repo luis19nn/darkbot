@@ -1,20 +1,17 @@
-from pydantic import BaseSettings, Field
+from pydantic_settings import BaseSettings
 from typing import Optional
 
 class Settings(BaseSettings):
-    APP_ENV: str = "development"
-    LOG_LEVEL: str = "DEBUG"
-    RABBITMQ_URL: str = "amqp://guest:guest@rabbitmq:5672/"
-    MAIN_QUEUE_NAME: str = "bot_tasks"
-    DLQ_QUEUE_NAME: str = "bot_dlq"
-    EXCHANGE_NAME: str = "bot_exchange"
-    EXCHANGE_TYPE: str = "direct"
-    DLQ_EXCHANGE: str = "bot_dlx"
-    PRIORITY: int = 5
-    DQL_PRIORITY: int = 10
-    WORKER_CONCURRENCY: int = 4
-    MAX_RETRIES: int = Field(3, gt=0, le=10)
-    TIKTOK_API_KEY: Optional[str] = None
+    APP_ENV: str
+    LOG_LEVEL: str
+    RABBITMQ_URL: str
+    RABBITMQ_USER: str
+    RABBITMQ_PASS: str
+    QUEUE_NAME: str
+    PRIORITY: int
+    MAX_RETRIES: int
+    MAX_CONCURRENT_INSTANCES: int
+    TIKTOK_API_KEY: Optional[str]
 
     class Config:
         env_file = ".env"

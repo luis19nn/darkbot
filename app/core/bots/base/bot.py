@@ -1,18 +1,19 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any
-from app.core.utils.logging import get_logger
+import logging
 
-logger = get_logger(__name__)
+logger = logging.getLogger('uvicorn.error')
 
-class BotBase(ABC):
+class BotInstanceBase(ABC):
     def __init__(self, config: Dict[str, Any]):
         self.config = config
         logger.debug("Configuration initialized", extra={"config": config})
 
     @abstractmethod
-    def create_instance(self):
+    async def run_pipeline(self):
         pass
 
+class BotFactoryBase(ABC):
     @abstractmethod
-    async def run_pipeline(self):
+    def create_instance(self, credential_number: int) -> BotInstanceBase:
         pass

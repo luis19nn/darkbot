@@ -25,22 +25,17 @@
 │   │   │           ├── 📜 bot.py   # FirstBot(BotBase)
 │   │   │           └── 📜 config.py
 │   │   │
-│   │   ├── 📂 processing           # Fluxo principal
-│   │   │   ├── 📜 scraper.py
-│   │   │   ├── 📜 processor.py
-│   │   │   ├── 📜 editor.py
-│   │   │   └── 📜 uploader.py
-│   │   │
-│   │   └── 📂 utils
-│   │       └── 📜 logging.py
+│   │   └── 📂 processing           # Fluxo principal
+│   │       ├── 📜 scraper.py
+│   │       ├── 📜 processor.py
+│   │       ├── 📜 editor.py
+│   │       └── 📜 uploader.py
 │   │
 │   ├── 📂 models
 │   │   └── 📜 schemas.py           # Modelos Pydantic
 │   │
 │   ├── 📂 workers
 │   │   ├── 📜 tasks.py             # Tarefas Dramatiq
-│   │   └── 📜 rabbitmq.py          # Configuração RabbitMQ
-│   │   └── 📜 dlq_processor.py     # Configuração Dead Letter Queue
 │   │
 │   ├── 📜 main.py                  # Setup FastAPI
 │   └── 📜 config.py                # Configurações
@@ -48,7 +43,6 @@
 ├── 📂 docker
 │   ├── 📜 Dockerfile.api             # Tarefas Dramatiq
 │   └── 📜 Dockerfile.worker          # Configuração RabbitMQ
-│   └── 📜 Dockerfile.dlq          # Configuração Dead Letter Queue
 │
 ├──📜 docker-compose.yml
 ├──📜 .env

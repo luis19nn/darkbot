@@ -2,10 +2,10 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, status
 from app.core.bots.factories.bot_factory import BotFactory
 from app.models.schemas import BotStartRequest
 from app.workers.tasks import start_bot_instances
-from app.core.utils.logging import get_logger
+import logging
 
 router = APIRouter(prefix="/bots", tags=["bots"])
-logger = get_logger(__name__)
+logger = logging.getLogger('uvicorn.error')
 
 @router.post("/{bot_type}/start")
 async def start_bot(
@@ -13,11 +13,13 @@ async def start_bot(
     request: BotStartRequest,
     background_tasks: BackgroundTasks
 ):
-    try:        
+    try:
+        logger.info("Starting video creation...")
+
         background_tasks.add_task(
             start_bot_instances.send,
             bot_type=bot_type,
-            config=request.config.dict(exclude_unset=True),
+            config=request.config,
             instances=request.instances
         )
 
@@ -43,5 +45,5 @@ async def start_bot(
         logger.critical(f"Unexpected error: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail={"type": "server_error", "msg": "Internal server error"}
+            detail={"type": "server_error", "msg": str(e)}
         )

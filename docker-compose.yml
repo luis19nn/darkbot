@@ -21,9 +21,10 @@ services:
       dockerfile: docker/Dockerfile.api
     environment:
       - APP_ENV=${APP_ENV:-development}
-      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASS:-guest}@rabbitmq:5672/
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - LOG_LEVEL=${LOG_LEVEL:-DEBUG}
     ports:
-      - "8000:8000"
+      - "8900:8900"
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -34,16 +35,7 @@ services:
       dockerfile: docker/Dockerfile.worker
     environment:
       - APP_ENV=${APP_ENV:-production}
-      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASS:-guest}@rabbitmq:5672/
-    depends_on:
-      - rabbitmq
-
-  dlq_worker:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.dlq
-    environment:
-      - APP_ENV=${APP_ENV:-production}
-      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASS:-guest}@rabbitmq:5672/
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - LOG_LEVEL=${LOG_LEVEL:-DEBUG}
     depends_on:
       - rabbitmq

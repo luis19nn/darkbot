@@ -1,6 +1,6 @@
-from app.core.utils.logging import get_logger
+import logging
 
-logger = get_logger(__name__)
+logger = logging.getLogger('uvicorn.error')
 
 class Processor:
     def __init__(self, strategy):

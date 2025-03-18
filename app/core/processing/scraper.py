@@ -1,6 +1,6 @@
-from app.core.utils.logging import get_logger
+import logging
 
-logger = get_logger(__name__)
+logger = logging.getLogger('uvicorn.error')
 
 class Scraper:
     def __init__(self, strategy):
@@ -10,5 +10,5 @@ class Scraper:
     async def execute(self, source: str):
         logger.info("Starting scraping process")
         content = await self.strategy.scrape(source)
-        logger.success(f"Scraped {len(content)} items")
+        logger.info(f"Scraped {len(content)} items")
         return content

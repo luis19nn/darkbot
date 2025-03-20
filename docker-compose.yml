@@ -3,6 +3,8 @@ version: '3.8'
 services:
   rabbitmq:
     image: rabbitmq:3.12-management-alpine
+    env_file:
+      - ./environment/implementation.env 
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-guest}
@@ -19,10 +21,8 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.api
-    environment:
-      - APP_ENV=${APP_ENV:-development}
-      - RABBITMQ_URL=${RABBITMQ_URL}
-      - LOG_LEVEL=${LOG_LEVEL:-DEBUG}
+    env_file:
+      - ./environment/implementation.env 
     ports:
       - "8900:8900"
     depends_on:
@@ -33,9 +33,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.worker
-    environment:
-      - APP_ENV=${APP_ENV:-production}
-      - RABBITMQ_URL=${RABBITMQ_URL}
-      - LOG_LEVEL=${LOG_LEVEL:-DEBUG}
+    env_file:
+      - ./environment/implementation.env 
     depends_on:
       - rabbitmq

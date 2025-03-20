@@ -8,7 +8,7 @@ class UploadStrategy(ABC):
     async def upload(self, video_path: str, credentials: dict) -> str:
         pass
 
-class FakeUploadStrategy(UploadStrategy):
+class TiktokUploadStrategy(UploadStrategy):
     async def upload(self, video_path: str, credentials: dict) -> str:
         logger.info(f"Uploading fake video to {credentials['platform']}")
         return "https://fake.url/video/123"

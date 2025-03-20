@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     TIKTOK_API_KEY: Optional[str]
 
     class Config:
-        env_file = ".env"
+        env_file = "implementation.env"
         env_file_encoding = "utf-8"
         case_sensitive = False
 

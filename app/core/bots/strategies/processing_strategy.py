@@ -8,7 +8,7 @@ class ProcessingStrategy(ABC):
     async def process(self, content: list) -> list:
         pass
 
-class FakeProcessingStrategy(ProcessingStrategy):
+class ChoicesProcessingStrategy(ProcessingStrategy):
     async def process(self, content: list) -> list:
         logger.info("Processing fake content with AI")
         return [f"Processed {item}" for item in content]

@@ -5,10 +5,10 @@ logger = logging.getLogger('uvicorn.error')
 
 class ScrapingStrategy(ABC):
     @abstractmethod
-    async def scrape(self, source: str) -> list:
+    async def scrape(self) -> list:
         pass
 
-class FakeScrapingStrategy(ScrapingStrategy):
-    async def scrape(self, source: str) -> list:
-        logger.info(f"Fake scraping from {source}")
-        return [f"Fake content {i}" for i in range(3)]
+class ChoicesScrapingStrategy(ScrapingStrategy):
+    async def scrape(self) -> list:
+        logger.info(f"Choices scraping")
+        return [f"Choices content {i}" for i in range(3)]

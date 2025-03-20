@@ -7,8 +7,8 @@ class Scraper:
         self.strategy = strategy
         logger.debug(f"Initialized scraper with strategy: {type(strategy).__name__}")
 
-    async def execute(self, source: str):
+    async def execute(self):
         logger.info("Starting scraping process")
-        content = await self.strategy.scrape(source)
+        content = await self.strategy.scrape()
         logger.info(f"Scraped {len(content)} items")
         return content

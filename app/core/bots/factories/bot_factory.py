@@ -1,9 +1,9 @@
 from app.core.bots.base.bot import BotFactoryBase
-from app.core.bots.implementations.fake_message_bot.bot import FakeMessageBot
+from app.core.bots.implementations.choices_bot.bot import ChoicesBot
 
 class BotFactory:
     _bots = {
-        "fake_message": FakeMessageBot,
+        "choices_bot": ChoicesBot,
     }
 
     @classmethod

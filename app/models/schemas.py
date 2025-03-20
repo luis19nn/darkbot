@@ -9,15 +9,12 @@ class BotStartRequest(BaseModel):
             "example": {
                 "instances": 2,
                 "config": {
-                    "source": "https://exemple.com/feed",
                     "credentials": [
                         {
-                            "platform": "TikTok",
                             "username": "user123",
                             "password": "pass123"
                         },
                         {
-                            "platform": "TikTok",
                             "username": "user456",
                             "password": "pass456"
                         }

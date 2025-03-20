@@ -7,35 +7,35 @@ from app.core.processing import (
 )
 import logging
 from app.core.bots.strategies import (
-    FakeScrapingStrategy,
-    FakeProcessingStrategy,
-    FakeEditingStrategy,
-    FakeUploadStrategy
+    ChoicesScrapingStrategy,
+    ChoicesProcessingStrategy,
+    ChoicesEditingStrategy,
+    TiktokUploadStrategy
 )
 
 logger = logging.getLogger('uvicorn.error')
 
-class FakeMessageBot(BotFactoryBase):
+class ChoicesBot(BotFactoryBase):
     def __init__(self, config: dict):
         self.config = config
         self.strategies = {
-            "scraping": FakeScrapingStrategy(),
-            "processing": FakeProcessingStrategy(),
-            "editing": FakeEditingStrategy(),
-            "upload": FakeUploadStrategy(),
+            "scraping": ChoicesScrapingStrategy(),
+            "processing": ChoicesProcessingStrategy(),
+            "editing": ChoicesEditingStrategy(),
+            "upload": TiktokUploadStrategy(),
         }
-        logger.info("FakeMessageBot initialized", extra={"config": config})
+        logger.info("ChoicesBot initialized", extra={"config": config})
 
     def create_instance(self, credential_number: int):
         logger.debug("Creating new bot instance...")
 
-        return FakeMessageBotInstance(
+        return ChoicesBotInstance(
             credential_number=credential_number,
             config=self.config,
             strategies=self.strategies,
         )
 
-class FakeMessageBotInstance(BotInstanceBase):
+class ChoicesBotInstance(BotInstanceBase):
     def __init__(self, credential_number: int, config: dict, strategies: dict):
         super().__init__(config)
         self.credential_number = credential_number
@@ -49,7 +49,7 @@ class FakeMessageBotInstance(BotInstanceBase):
         try:
             logger.info("Starting pipeline")
 
-            content = await self.scraper.execute(self.config["source"])
+            content = await self.scraper.execute()
             processed = await self.processor.execute(content)
             video = await self.editor.execute(processed)
             result = await self.uploader.execute(

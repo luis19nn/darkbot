@@ -1,5 +1,5 @@
 from app.core.bots.base.bot import BotFactoryBase, BotInstanceBase
-from app.core.processing import ( 
+from app.core.bots.processing import ( 
     Scraper, 
     Processor, 
     Editor, 

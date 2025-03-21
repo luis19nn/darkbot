@@ -6,7 +6,7 @@ from app.core.processing import (
     Uploader 
 )
 import logging
-from app.core.bots.strategies import (
+from .strategies import (
     ChoicesScrapingStrategy,
     ChoicesProcessingStrategy,
     ChoicesEditingStrategy,

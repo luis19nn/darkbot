@@ -7,7 +7,7 @@ logger = logging.getLogger('uvicorn.error')
 class BotInstanceBase(ABC):
     def __init__(self, config: Dict[str, Any]):
         self.config = config
-        logger.debug("Configuration initialized", extra={"config": config})
+        logger.info("Configuration initialized", extra={"config": config})
 
     @abstractmethod
     async def run_pipeline(self):

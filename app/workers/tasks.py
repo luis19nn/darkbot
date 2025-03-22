@@ -51,7 +51,7 @@ def start_bot_instances(bot_type: str, config: dict, instances: int):
                     exc_info=result
                 )
             else:
-                logger.info(f"Instance {i} completed successfully. Result: {result}")
+                logger.info(f"Instance {i} completed. Result: {result}")
 
     except Exception as e:
         logger.error(

@@ -1,14 +1,12 @@
 from app.core.bots.base.bot import BotFactoryBase, BotInstanceBase
 from app.core.bots.processing import ( 
     Scraper, 
-    Processor, 
     Editor, 
     Uploader 
 )
 import logging
 from .strategies import (
     ChoicesScrapingStrategy,
-    ChoicesProcessingStrategy,
     ChoicesEditingStrategy,
     TiktokUploadStrategy
 )
@@ -20,14 +18,13 @@ class ChoicesBot(BotFactoryBase):
         self.config = config
         self.strategies = {
             "scraping": ChoicesScrapingStrategy(),
-            "processing": ChoicesProcessingStrategy(),
             "editing": ChoicesEditingStrategy(),
             "upload": TiktokUploadStrategy(),
         }
         logger.info("ChoicesBot initialized", extra={"config": config})
 
     def create_instance(self, credential_number: int):
-        logger.debug("Creating new bot instance...")
+        logger.info("Creating new bot instance...")
 
         return ChoicesBotInstance(
             credential_number=credential_number,
@@ -40,7 +37,6 @@ class ChoicesBotInstance(BotInstanceBase):
         super().__init__(config)
         self.credential_number = credential_number
         self.scraper = Scraper(strategies["scraping"])
-        self.processor = Processor(strategies["processing"])
         self.editor = Editor(strategies["editing"])
         self.uploader = Uploader(strategies["upload"])
         logger.info("Bot instance created")
@@ -50,8 +46,7 @@ class ChoicesBotInstance(BotInstanceBase):
             logger.info("Starting pipeline")
 
             content = await self.scraper.execute()
-            processed = await self.processor.execute(content)
-            video = await self.editor.execute(processed)
+            video = await self.editor.execute(content)
             result = await self.uploader.execute(
                 video, 
                 self.config["credentials"][self.credential_number]

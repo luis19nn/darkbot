@@ -7,12 +7,12 @@ logger = logging.getLogger('uvicorn.error')
 
 class PexelsAPI:
     @staticmethod
-    async def execute(keyword, filename):
+    async def get_images(keyword, filename):
         logger.info(f"Searching image for keyword: {keyword}")
 
         headers = {'Authorization': settings.PEXELS_API_KEY}
         url = f"https://api.pexels.com/v1/search?query={keyword}&per_page=1"
-        full_path = f"{settings.TMP_DIR}{filename}"
+        full_path = f"{settings.IMG_TMP_DIR}{filename}"
 
         try:
             async with aiohttp.ClientSession() as session:
@@ -21,7 +21,7 @@ class PexelsAPI:
                         data = await response.json()
                         if data["photos"]:
                             img_url = data["photos"][0]["src"]["original"]
-                            
+
                             async with session.get(img_url) as img_response:
                                 if img_response.status == 200:
                                     async with aiofiles.open(full_path, 'wb') as f:

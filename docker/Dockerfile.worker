@@ -11,6 +11,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-USER nobody
-
 CMD ["dramatiq", "app.workers.tasks", "--processes", "4", "--threads", "8"]

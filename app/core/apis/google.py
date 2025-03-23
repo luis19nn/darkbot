@@ -32,10 +32,11 @@ class Google:
                 audio_config=audio_config,
             )
 
-            filename = f"{settings.TMP_DIR}{filename}"
-            with open(filename, "wb") as out:
+            full_path = f"{settings.AUDIOS_TMP_DIR}{filename}"
+            with open(full_path, "wb") as out:
                 out.write(response.audio_content)
-                print(f'Generated speech saved to "{filename}"')
+                logger.info(f"Generated speech saved to {full_path}")
+                return full_path
         except Exception as e:
             logger.error(f"Error in Google: {str(e)}")
             raise e

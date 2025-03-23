@@ -55,7 +55,7 @@ class ChoicesScrapingStrategy(ABC):
                     keywords = choice[option_key]['image_keywords']
                     filename = f"choice_{idx}_{option_key}.jpg"
                     pexels_tasks.append(
-                        PexelsAPI.execute(keywords, filename)
+                        PexelsAPI.get_images(keywords, filename)
                     )
 
             pexels_results = await asyncio.gather(*pexels_tasks)
@@ -86,9 +86,14 @@ class ChoicesScrapingStrategy(ABC):
                             Google.text_to_speech(text, filename)
                         )
 
-            await asyncio.gather(*google_tasks)
+            google_results = await asyncio.gather(*google_tasks)
 
-            logger.info(f"Text-to-speech complete: {content}")
+            index = 0
+            for choice in content['choices']:
+                for option_key in ['option_1', 'option_2']:
+                    choice[option_key]['audio_path'] = google_results[index]
+                    index += 1
+
             return content
         except Exception as e:
             raise e

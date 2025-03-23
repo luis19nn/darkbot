@@ -4,7 +4,8 @@ from pathlib import Path
 
 class Settings(BaseSettings):
     APP_ENV: str
-    TMP_DIR: str
+    IMG_TMP_DIR: str
+    AUDIOS_TMP_DIR: str
 
     RABBITMQ_URL: str
     RABBITMQ_USER: str

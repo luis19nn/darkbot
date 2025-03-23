@@ -1,5 +1,6 @@
 # Ignore specific environment files
-environment/implementation.env
+environment/*
+!environment/template.env
 
 # Python generated directories and files
 __pycache__/

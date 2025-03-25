@@ -57,6 +57,13 @@ class ChoicesEditingStrategy(ABC):
             'tic_tac': AudioFileClip(self.ASSET_PATHS['tic_tac']),
             'notify': AudioFileClip(self.ASSET_PATHS['notify'])
         }
+    
+    def _create_image_clip(self, path, position_y):
+        """Create a ImageClip with consistent settings"""
+        return ImageClip(
+            path
+        ).resize(height=600)\
+        .set_position(("center", position_y))
 
     def _create_text_clip(self, text, position_y, duration, size_ratio=0.8):
         """Create a TextClip with consistent settings"""
@@ -95,8 +102,8 @@ class ChoicesEditingStrategy(ABC):
         }
         
         # Load choice-specific images and audio
-        img1 = ImageClip(opt1['image_path']).resize(height=600).set_position(("center", positions['img1_y']))
-        img2 = ImageClip(opt2['image_path']).resize(height=600).set_position(("center", positions['img2_y']))
+        img1 = self._create_image_clip(opt1['image_path'], positions['img1_y'])
+        img2 = self._create_image_clip(opt2['image_path'], positions['img2_y'])
         
         audio1 = AudioFileClip(opt1['audio_path'])
         audio2 = AudioFileClip(opt2['audio_path'])

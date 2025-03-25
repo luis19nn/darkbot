@@ -18,6 +18,9 @@ class Settings(BaseSettings):
     DEEPSEEK_API_URL: Optional[str]
     DEEPSEEK_API_KEY: Optional[str]
 
+    PINTEREST_ACCESS_TOKEN: Optional[str]
+    PINTEREST_API_URL: Optional[str]
+
     PEXELS_API_KEY: Optional[str]
 
     GOOGLE_PROJECT_TYPE: Optional[str]

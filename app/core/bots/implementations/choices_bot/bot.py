@@ -23,19 +23,19 @@ class ChoicesBot(BotFactoryBase):
         }
         logger.info("ChoicesBot initialized", extra={"config": config})
 
-    def create_instance(self, credential_number: int):
+    def create_instance(self, instance_number: int):
         logger.info("Creating new bot instance...")
 
         return ChoicesBotInstance(
-            credential_number=credential_number,
+            instance_number=instance_number,
             config=self.config,
             strategies=self.strategies,
         )
 
 class ChoicesBotInstance(BotInstanceBase):
-    def __init__(self, credential_number: int, config: dict, strategies: dict):
+    def __init__(self, instance_number: int, config: dict, strategies: dict):
         super().__init__(config)
-        self.credential_number = credential_number
+        self.instance_number = instance_number
         self.scraper = Scraper(strategies["scraping"])
         self.editor = Editor(strategies["editing"])
         self.uploader = Uploader(strategies["upload"])
@@ -44,12 +44,13 @@ class ChoicesBotInstance(BotInstanceBase):
     async def run_pipeline(self):
         try:
             logger.info("Starting pipeline")
+            instance_config = self.config["instances"][self.instance_number]
 
-            content = await self.scraper.execute()
+            content = await self.scraper.execute(instance_config)
             video = await self.editor.execute(content)
             result = await self.uploader.execute(
                 video, 
-                self.config["credentials"][self.credential_number]
+                instance_config["credentials"]
             )
 
             logger.info("Pipeline completed successfully")

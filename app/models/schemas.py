@@ -9,14 +9,20 @@ class BotStartRequest(BaseModel):
             "example": {
                 "instances": 2,
                 "config": {
-                    "credentials": [
+                    "instances": [
                         {
-                            "username": "user123",
-                            "password": "pass123"
+                            "theme": "anime",
+                            "credentials": {
+                                "username": "user123",
+                                "password": "pass123"
+                            }
                         },
                         {
-                            "username": "user456",
-                            "password": "pass456"
+                            "theme": "sports",
+                            "credentials": {
+                                "username": "user456",
+                                "password": "pass456"
+                            }
                         }
                     ]
                 }

@@ -90,7 +90,8 @@ class ChoicesEditingStrategy(ABC):
         # Duration settings
         durations = {
             'tick': 3,
-            'percent': 2
+            'notify': assets['notify'].duration,
+            'or': assets['or_sound'].duration
         }
         
         # Load choice-specific images and audio
@@ -101,21 +102,22 @@ class ChoicesEditingStrategy(ABC):
         audio2 = AudioFileClip(opt2['audio_path'])
         
         # Create text elements
-        audio_duration = audio1.duration + assets['or_sound'].duration + audio2.duration
+        audio_duration = audio1.duration + durations['or'] + audio2.duration
         audio_duration_and_tick = audio_duration + durations['tick']
-        total_duration = audio_duration_and_tick + assets['notify'].duration + 1
+        total_duration = audio_duration_and_tick + durations['notify']
         
         text1 = self._create_text_clip(opt1['text'], positions['text1_y'], audio_duration_and_tick)
         text2 = self._create_text_clip(opt2['text'], positions['text2_y'], audio_duration_and_tick)
         
         # Create percentage elements
+        percent_duration = durations['notify']
         percent1 = self._create_percent_clip(opt1['percentages'], text1.pos)
         percent2 = self._create_percent_clip(opt2['percentages'], text2.pos)
         
         # Configure element timing
         percent_start = audio_duration_and_tick
-        percent1 = percent1.set_start(percent_start).set_duration(durations['percent'])
-        percent2 = percent2.set_start(percent_start).set_duration(durations['percent'])
+        percent1 = percent1.set_start(percent_start).set_duration(percent_duration)
+        percent2 = percent2.set_start(percent_start).set_duration(percent_duration)
         
         # Build audio timeline
         tick_audio = assets['tic_tac'].subclip(0, durations['tick'])

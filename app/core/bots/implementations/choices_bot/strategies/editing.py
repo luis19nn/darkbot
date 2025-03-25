@@ -34,7 +34,7 @@ class ChoicesEditingStrategy(ABC):
         'stroke_color': 'white',
         'stroke_width': 4
     }
-    
+
     # Assets paths
     ASSET_PATHS = {
         'background': "app/core/assets/images/wyr-background.png",
@@ -43,13 +43,13 @@ class ChoicesEditingStrategy(ABC):
         'tic_tac': "app/core/assets/audios/tic-tac.mp3",
         'notify': "app/core/assets/audios/notify.mp3"
     }
-    
+
     OUTPUT_DIR = "app/core/assets/tmp/videos"
 
     async def _load_assets(self):
         """Load all shared assets"""
         W, H = self.VIDEO_DIMENSIONS
-        
+
         return {
             'bg_image': ImageClip(self.ASSET_PATHS['background']).resize((W, H)),
             'bg_music': AudioFileClip(self.ASSET_PATHS['bg_music']),
@@ -85,7 +85,7 @@ class ChoicesEditingStrategy(ABC):
         """Process an individual choice segment"""
         W, H = self.VIDEO_DIMENSIONS
         opt1, opt2 = choice['option_1'], choice['option_2']
-        
+
         # Positioning settings
         positions = {
             'img1_y': 0.05 * H,
@@ -100,32 +100,32 @@ class ChoicesEditingStrategy(ABC):
             'notify': assets['notify'].duration,
             'or': assets['or_sound'].duration
         }
-        
+
         # Load choice-specific images and audio
         img1 = self._create_image_clip(opt1['image_path'], positions['img1_y'])
         img2 = self._create_image_clip(opt2['image_path'], positions['img2_y'])
-        
+
         audio1 = AudioFileClip(opt1['audio_path'])
         audio2 = AudioFileClip(opt2['audio_path'])
-        
+
         # Create text elements
         audio_duration = audio1.duration + durations['or'] + audio2.duration
         audio_duration_and_tick = audio_duration + durations['tick']
         total_duration = audio_duration_and_tick + durations['notify']
-        
+
         text1 = self._create_text_clip(opt1['text'], positions['text1_y'], audio_duration_and_tick)
         text2 = self._create_text_clip(opt2['text'], positions['text2_y'], audio_duration_and_tick)
-        
+
         # Create percentage elements
         percent_duration = durations['notify']
         percent1 = self._create_percent_clip(opt1['percentages'], text1.pos)
         percent2 = self._create_percent_clip(opt2['percentages'], text2.pos)
-        
+
         # Configure element timing
         percent_start = audio_duration_and_tick
         percent1 = percent1.set_start(percent_start).set_duration(percent_duration)
         percent2 = percent2.set_start(percent_start).set_duration(percent_duration)
-        
+
         # Build audio timeline
         tick_audio = assets['tic_tac'].subclip(0, durations['tick'])
         audio_timeline = concatenate_audioclips([
@@ -135,7 +135,7 @@ class ChoicesEditingStrategy(ABC):
             tick_audio.set_start(audio_duration),
             assets['notify'].set_start(audio_duration_and_tick)
         ])
-        
+
         # Compose the complete clip
         return CompositeVideoClip([
             assets['bg_image'].set_duration(total_duration),
@@ -151,22 +151,31 @@ class ChoicesEditingStrategy(ABC):
         try:
             assets = await self._load_assets()
             final_clips = []
-            
+
+            # List to store all temporary files that need to be deleted
+            temp_files_to_delete = []
+
             for choice in content['choices']:
+                # Adds the paths of images and audios to the exclusion list
+                temp_files_to_delete.extend([
+                    choice['option_1']['image_path'], choice['option_1']['audio_path'],
+                    choice['option_2']['image_path'], choice['option_2']['audio_path']
+                ])
+
                 segment = self._process_choice_segment(choice, assets)
                 final_clips.append(segment)
-            
+
             # Concatenate all segments
             final_video = concatenate_videoclips(final_clips)
-            
+
             # Add background music
             bg_music = assets['bg_music'].fx(volumex, 0.1)
             final_audio = CompositeAudioClip([bg_music, final_video.audio])
             final_video = final_video.set_audio(final_audio)
-            
+
             # Save the video
             output_path = f"{self.OUTPUT_DIR}/final_{int(time.time())}.mp4"
-            
+
             final_video.write_videofile(
                 output_path,
                 fps=24,
@@ -174,7 +183,20 @@ class ChoicesEditingStrategy(ABC):
                 audio_codec="aac",
                 threads=4
             )
-            
+
+            # Close all clips to free up resources
+            final_video.close()
+            for clip in final_clips:
+                clip.close()
+
+            # Deletes temporary files
+            for file_path in temp_files_to_delete:
+                try:
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+                except Exception as e:
+                    logger.error(f"Error deleting temporary file {file_path}: {str(e)}")
+
             return output_path
 
         except Exception as e:

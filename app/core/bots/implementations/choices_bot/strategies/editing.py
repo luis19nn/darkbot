@@ -39,13 +39,14 @@ class ChoicesEditingStrategy(ABC):
         'size': (864, None),  # (width, height) - None means auto
         'text_align': "center",
         'stroke_width': 2,
-        'method': 'caption'  # Wrapping method
+        'method': 'caption',  # Wrapping method
+        'margin': [5, 5]  # [horizontal, vertical]
     }
 
     PERCENT_STYLE = {
         'font_size': 90,
-        'stroke_width': 15,
-        'margin': [10, 10]  # [horizontal, vertical]
+        'stroke_width': 17,
+        'margin': [12, 10]  # [horizontal, vertical]
     }
 
     # Color palette
@@ -79,8 +80,8 @@ class ChoicesEditingStrategy(ABC):
     POSITION_FACTORS = {
         'img1_y': 0.035,  # Top image vertical position
         'img2_y': 0.65,   # Bottom image vertical position
-        'text1_y': 0.39,  # Top text vertical position
-        'text2_y': 0.58   # Bottom text vertical position
+        'text1_y': 0.4,  # Top text vertical position
+        'text2_y': 0.6   # Bottom text vertical position
     }
 
     async def _load_assets(self) -> Dict:
@@ -291,8 +292,8 @@ class ChoicesEditingStrategy(ABC):
             assets['or_sound'],
             audio2,
             tick_audio.with_start(audio_duration),
-            assets['notify'].with_effects([MultiplyVolume(0.5)]).with_start(audio_duration_and_tick),
-            swipe_audio.with_effects([MultiplyVolume(2)]).with_start(audio_final)
+            assets['notify'].with_effects([MultiplyVolume(0.2)]).with_start(audio_duration_and_tick),
+            swipe_audio.with_effects([MultiplyVolume(3)]).with_start(audio_final)
         ])
 
     def _process_choice_segment(self, choice: Dict, assets: Dict) -> CompositeVideoClip:

@@ -38,5 +38,5 @@ class Google:
                 logger.info(f"Generated speech saved to {full_path}")
                 return full_path
         except Exception as e:
-            logger.error(f"Error in Google: {str(e)}")
+            logger.error(f"Error in Google.text_to_speech: {str(e)}")
             raise e

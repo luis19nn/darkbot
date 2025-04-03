@@ -1,7 +1,7 @@
 from abc import ABC
 import asyncio
 import logging
-from app.core.apis import (DeepSeek, Pinterest, PexelsAPI, Google)
+from app.core.apis import (DeepSeek, PexelsAPI, Google)
 
 logger = logging.getLogger('uvicorn.error')
 
@@ -22,7 +22,6 @@ class ChoicesScrapingStrategy(ABC):
             prompt = f"""
             I want you to return a json "Would you rather..." in the following format:
             {{
-                "or": "or",
                 "choices": [
                     {{
                         "option_1": {{"text": "...", "image_keywords": "...", "percentages": 60}},
@@ -35,12 +34,15 @@ class ChoicesScrapingStrategy(ABC):
             "text" has the choices, and "option_1" and "option_2" need to have some relationship that makes sense for the choice between the two options
             "image_keywords" has keywords to search on the internet for images related to the options present in the equivalent "text"
             "percentages" can be any, vary the percentages according to each choice
- 
+
             I want the choices to be about just one topic: {theme}. Also, I want the choices to be interesting, fun, and controversial.
 
-            Remember to return only the json
+            Remember to return only the json.
+            Try to keep only two image_keywords.
             I also don't want any markdown or comments.
             Make sure each option has only one sentence.
+            Make sure the image_keywords are not the same.
+            Do not include the phrase "Would you rather" in the options.
             """
 
             return await DeepSeek.execute(prompt)

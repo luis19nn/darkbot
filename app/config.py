@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     APP_ENV: str
     IMG_TMP_DIR: str
     AUDIOS_TMP_DIR: str
+    MISC_DIR: str
 
     RABBITMQ_URL: str
     RABBITMQ_USER: str
@@ -17,8 +18,6 @@ class Settings(BaseSettings):
 
     DEEPSEEK_API_URL: Optional[str]
     DEEPSEEK_API_KEY: Optional[str]
-
-    PEXELS_API_KEY: Optional[str]
 
     GOOGLE_PROJECT_TYPE: Optional[str]
     GOOGLE_PROJECT_ID: Optional[str]

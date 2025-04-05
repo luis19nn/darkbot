@@ -1,7 +1,7 @@
 from abc import ABC
 import asyncio
 import logging
-from app.core.apis import (DeepSeek, PexelsAPI, Google)
+from app.core.apis import (DeepSeek, Google)
 
 logger = logging.getLogger('uvicorn.error')
 
@@ -10,7 +10,7 @@ class ChoicesScrapingStrategy(ABC):
         logger.info(f"Choices scraping")
         try:
             text_scraping = await self.text(config["theme"])
-            image_scraping = await self.image(text_scraping)
+            image_scraping = await self.image(text_scraping, config["theme"])
             return await self.text_to_speech(image_scraping)
         except Exception as e:
             raise e
@@ -30,19 +30,18 @@ class ChoicesScrapingStrategy(ABC):
                 ]
             }}
 
-            "choices" is a json list with several possible choices, I want it to have 4 different choices
+            "choices" is a json list with several possible choices, I want it to have 5 different choices
             "text" has the choices, and "option_1" and "option_2" need to have some relationship that makes sense for the choice between the two options
             "image_keywords" has keywords to search on the internet for images related to the options present in the equivalent "text"
             "percentages" can be any, vary the percentages according to each choice
 
             I want the choices to be about just one topic: {theme}. Also, I want the choices to be interesting, fun, and controversial.
 
-            Remember to return only the json.
-            Try to keep only two image_keywords.
-            I also don't want any markdown or comments.
             Make sure each option has only one sentence.
             Make sure the image_keywords are not the same.
             Do not include the phrase "Would you rather" in the options.
+            Remember to return only the json, don't use any markdown.
+            I don't want any markdown or comments.
             """
 
             return await DeepSeek.execute(prompt)
@@ -50,25 +49,25 @@ class ChoicesScrapingStrategy(ABC):
         except Exception as e:
             raise e
 
-    async def image(self, content):
+    async def image(self, content, theme):
         logger.info(f"Scraping image")
 
         try:
-            pexels_tasks = []
+            google_tasks = []
             for idx, choice in enumerate(content['choices']):
                 for option_key in ['option_1', 'option_2']:
                     keywords = choice[option_key]['image_keywords']
                     filename = f"choice_{idx}_{option_key}.jpg"
-                    pexels_tasks.append(
-                        PexelsAPI.get_images(keywords, filename)
+                    google_tasks.append(
+                        Google.get_image(keywords, filename, theme)
                     )
 
-            pexels_results = await asyncio.gather(*pexels_tasks)
+            google_results = await asyncio.gather(*google_tasks)
 
             index = 0
             for choice in content['choices']:
                 for option_key in ['option_1', 'option_2']:
-                    choice[option_key]['image_path'] = pexels_results[index]
+                    choice[option_key]['image_path'] = google_results[index]
                     index += 1
 
             return content

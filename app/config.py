@@ -27,6 +27,12 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: Optional[str]
     GOOGLE_TOKEN_URI: Optional[str]
 
+    FLICKR_API_URL: Optional[str]
+    FLICKR_API_KEY: Optional[str]
+
+    SERPER_API_KEY: Optional[str]
+    SERPER_API_URL: Optional[str]
+
     TIKTOK_API_KEY: Optional[str]
 
     class Config:

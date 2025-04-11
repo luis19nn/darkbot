@@ -1,14 +1,12 @@
 from app.core.bots.base.bot import BotFactoryBase, BotInstanceBase
 from app.core.bots.processing import ( 
     Scraper, 
-    Editor, 
-    Uploader 
+    Editor
 )
 import logging
 from .strategies import (
     ChoicesScrapingStrategy,
-    ChoicesEditingStrategy,
-    TiktokUploadStrategy
+    ChoicesEditingStrategy
 )
 
 logger = logging.getLogger('uvicorn.error')
@@ -18,8 +16,7 @@ class ChoicesBot(BotFactoryBase):
         self.config = config
         self.strategies = {
             "scraping": ChoicesScrapingStrategy(),
-            "editing": ChoicesEditingStrategy(),
-            "upload": TiktokUploadStrategy(),
+            "editing": ChoicesEditingStrategy()
         }
         logger.info("ChoicesBot initialized", extra={"config": config})
 
@@ -38,7 +35,6 @@ class ChoicesBotInstance(BotInstanceBase):
         self.instance_number = instance_number
         self.scraper = Scraper(strategies["scraping"])
         self.editor = Editor(strategies["editing"])
-        self.uploader = Uploader(strategies["upload"])
         logger.info("Bot instance created")
 
     async def run_pipeline(self):
@@ -48,13 +44,9 @@ class ChoicesBotInstance(BotInstanceBase):
 
             content = await self.scraper.execute(instance_config)
             video = await self.editor.execute(content)
-            result = await self.uploader.execute(
-                video, 
-                instance_config["credentials"]
-            )
 
             logger.info("Pipeline completed successfully")
-            return {"status": "success", "result": result}
+            return {"status": "success", "result": video}
 
         except Exception as e:
             logger.error("Pipeline failed", extra={"error": str(e), "config": self.config})

@@ -3,6 +3,7 @@ import logging
 import os
 import time
 from typing import Dict, Tuple
+from app.config import settings
 
 from moviepy import (
     ImageClip,
@@ -26,7 +27,6 @@ class ChoicesEditingStrategy(ABC):
 
     # Video configuration
     VIDEO_DIMENSIONS = (1080, 1920)  # (width, height) in pixels
-    OUTPUT_DIR = "app/core/assets/tmp/videos"
     OUTPUT_FPS = 24
     OUTPUT_CODEC = "libx264"
     AUDIO_CODEC = "aac"
@@ -393,7 +393,7 @@ class ChoicesEditingStrategy(ABC):
             percent2_slide_out
         ]).with_audio(audio_timeline)
 
-    async def edit(self, content: Dict) -> str:
+    async def edit(self, account: str, content: Dict) -> str:
         """
         Main method to edit the complete video from content.
         Args:
@@ -426,7 +426,7 @@ class ChoicesEditingStrategy(ABC):
             final_video = final_video.with_audio(final_audio)
             
             # Save the video
-            output_path = f"{self.OUTPUT_DIR}/final_{int(time.time())}.mp4"
+            output_path = f"{settings.VIDEOS_TMP_DIR}{account}_{int(time.time())}.mp4"
 
             final_video.write_videofile(
                 output_path,

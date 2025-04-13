@@ -1,32 +1,24 @@
 import asyncio
 import dramatiq
+from app.utils import run_with_concurrency_limit
+from app.utils import validate_config_instances
 from app.workers import rabbitmq
 from app.config import settings
 from app.core.bots.factories.bot_factory import BotFactory
+from app.core.uploads.implementations.upload import UploadInstance
 import logging
 
 logger = logging.getLogger('uvicorn.error')
 
-async def run_with_concurrency_limit(coroutines, max_concurrent=10):
-    semaphore = asyncio.Semaphore(max_concurrent)
-    
-    async def wrapper(coro):
-        async with semaphore:
-            return await coro
-            
-    return await asyncio.gather(
-        *(wrapper(coro) for coro in coroutines),
-        return_exceptions=True
-    )
-
 @dramatiq.actor(
-    queue_name=settings.QUEUE_NAME,
+    queue_name=settings.BOT_QUEUE_NAME,
     max_retries=settings.MAX_RETRIES,
     priority=settings.PRIORITY
 )
 def start_bot_instances(bot_type: str, config: dict, instances: int):
     try:
         logger.info(f"Starting {instances} instances of bot {bot_type}")
+        validate_config_instances(config, instances)
 
         # Create bot factory and instances
         bot = BotFactory.create(bot_type, config)
@@ -56,6 +48,39 @@ def start_bot_instances(bot_type: str, config: dict, instances: int):
     except Exception as e:
         logger.error(
             f"Critical error processing bot {bot_type}: {str(e)}",
+            exc_info=True
+        )
+        raise
+
+@dramatiq.actor(
+    queue_name=settings.UPLOAD_QUEUE_NAME,
+    max_retries=settings.MAX_RETRIES,
+    priority=settings.PRIORITY
+)
+def start_upload_instances(config: dict, instances: int):
+    try:
+        logger.info(f"Uploading videos task starting...")
+        validate_config_instances(config, instances)
+
+        upload_instances = [UploadInstance(i, config) for i in range(instances)]
+        coroutines = [instance.upload() for instance in upload_instances]
+
+        results = asyncio.run(
+            run_with_concurrency_limit(
+                coroutines,
+                settings.MAX_CONCURRENT_INSTANCES
+            )
+        )
+
+        for i, result in enumerate(results):
+            if isinstance(result, Exception):
+                logger.error(f"Instance {i} failed: {result}", exc_info=result)
+            else:
+                logger.info(f"Instance {i} completed: {result}")
+
+    except Exception as e:
+        logger.error(
+            f"Critical error uploading videos: {str(e)}",
             exc_info=True
         )
         raise

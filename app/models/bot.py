@@ -11,9 +11,11 @@ class BotStartRequest(BaseModel):
                 "config": {
                     "instances": [
                         {
+                            "account": "account_01",
                             "theme": "anime"
                         },
                         {
+                            "account": "account_02",
                             "theme": "sports"
                         }
                     ]

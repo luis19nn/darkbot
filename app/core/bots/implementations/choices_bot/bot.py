@@ -41,12 +41,13 @@ class ChoicesBotInstance(BotInstanceBase):
         try:
             logger.info("Starting pipeline")
             instance_config = self.config["instances"][self.instance_number]
+            account = instance_config.get("account", "")
 
             content = await self.scraper.execute(instance_config)
-            video = await self.editor.execute(content)
+            video = await self.editor.execute(account, content)
 
             logger.info("Pipeline completed successfully")
-            return {"status": "success", "result": video}
+            return {"status": "success", "message": video}
 
         except Exception as e:
             logger.error("Pipeline failed", extra={"error": str(e), "config": self.config})

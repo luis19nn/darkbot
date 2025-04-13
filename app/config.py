@@ -6,12 +6,14 @@ class Settings(BaseSettings):
     APP_ENV: str
     IMG_TMP_DIR: str
     AUDIOS_TMP_DIR: str
+    VIDEOS_TMP_DIR: str
     MISC_DIR: str
 
     RABBITMQ_URL: str
     RABBITMQ_USER: str
     RABBITMQ_PASS: str
-    QUEUE_NAME: str
+    BOT_QUEUE_NAME: str
+    UPLOAD_QUEUE_NAME: str
     PRIORITY: int
     MAX_RETRIES: int
     MAX_CONCURRENT_INSTANCES: int
